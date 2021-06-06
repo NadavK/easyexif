@@ -33,7 +33,7 @@ python easyexif.py {to} {from} {filename}
 
 {filename} can contain wildcards
 
-##Examples
+## Examples
 1. Set the modified-date from the exif-date:
     ```bash
     python easyexif.py m x *.jpg
