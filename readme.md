@@ -33,7 +33,6 @@ python easyexif.py {to} {from} {filename}
 
 {filename} can contain wildcards
 
-
 ##Examples
 1. Set the modified-date from the exif-date:
     ```bash
@@ -79,4 +78,3 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## License
 [GNU Affero General Public License v3.0](https://github.com/NadavK/easyexif/blob/main/LICENSE)
-
