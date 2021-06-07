@@ -1,20 +1,19 @@
 from datetime import datetime
-#from datetime import time
 from datetime import timedelta
-import exiftool         #pip install PyExifTool
+import exiftool         # pip install PyExifTool
 import glob
 import os
-import piexif           #pip install piexif
+import piexif           # pip install piexif
+import pywintypes       # pip install pywin32
 import re
 import sys
 import traceback
-import win32con
-import win32file        #pip install pywin32
-import pywintypes       #pip install pywin32
 import warnings
+import win32con
+import win32file        # pip install pywin32
 
 
-et = None       #ExifTool for video files
+et = None       # instance of ExifTool for video files
 
 filename_delimiter = '~'
 
@@ -41,8 +40,25 @@ def getExifTool():
     global et
     if not et:
         # '-charset cp437'
-        et = exiftool.ExifTool(common_args=['-preserve','-overwrite_original'], executable_=os.path.dirname(os.path.realpath(__file__)) + '\exiftool.exe')
-        et.start()
+        # Try to execute ExifTool in this script's path
+        path_to_exitftool = os.path.dirname(os.path.realpath(__file__)) + '\exiftool.exe'   # Check if exiftool is in the same directory as the script
+        if not os.path.isfile(path_to_exitftool):   # Maybe it exists somewhere in the PATH?
+            path_to_exitftool = 'exiftool.exe'
+        try:
+            et = exiftool.ExifTool(common_args=['-preserve','-overwrite_original'], executable_=path_to_exitftool)
+            et.start()
+        except Exception as e:
+            et = None
+            traceback.print_exc()
+            print()
+            print()
+            print('**********************************************************************')
+            print('***  ExifTool required, download from here: https://exiftool.org/  ***')
+            print('***  Make sure ExifTool is somewhere in the PATH.                  ***')
+            print('**********************************************************************')
+            print()
+            print()
+            exit()
     return et
 
 
@@ -122,6 +138,8 @@ def getExifDateJpeg(filename):
 
 def getExifDateVideo(filename):
     et = getExifTool()
+    if not et:
+        return False
 
     exif_date = None
     exif_dict = et.get_tags(exif_tags_video_fetch, filename)
@@ -148,6 +166,8 @@ def getExifDateVideo(filename):
 
 def setExifDateVideo(filename, newdate):
     et = getExifTool()
+    if not et:
+        return False
 
     d = '{0:%Y:%m:%d %H:%M:%S}'.format(newdate)
     tags = {'AllDates': '{0}'.format(d)}
